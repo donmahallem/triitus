@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="recyclerView" type="id"/>
+    <item name="coordinatorLayout" type="id"/>
+    <item name="floatingActionButton" type="id"/>
+    <item name="txtTitle" type="id"/>
+    <item name="txtDescription" type="id"/>
+    <item name="txtEntries" type="id"/>
+    <item name="txtFileSize" type="id"/>
+    <item name="ivCover" type="id"/>
+    <item name="collapsingToolbar" type="id"/>
+    <item name="btnOk" type="id"/>
+    <item name="btnCancel" type="id"/>
+    <item name="contentLoadingProgressBar" type="id"/>
+</resources>

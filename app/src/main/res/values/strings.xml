@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Triitus</string>
+    <string name="action_settings">Settings</string>
+    <string name="title">Title</string>
+    <string name="filesize">Filesize</string>
+    <string name="sounds">Sounds</string>
+    <string name="description">Description</string>
+</resources>
