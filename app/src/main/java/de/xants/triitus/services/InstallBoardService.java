@@ -14,12 +14,24 @@
  *  limitations under the License.
  */
 
-package de.xants.triitus;
+package de.xants.triitus.services;
+
+import android.app.IntentService;
+import android.content.Intent;
 
 /**
  * Created by Don on 13.10.2015.
  */
-public final class Util {
+public final class InstallBoardService extends IntentService {
 
+    private final static String SERVICE_NAME = "InstallBoardService";
 
+    public InstallBoardService() {
+        super(SERVICE_NAME);
+    }
+
+    @Override
+    protected void onHandleIntent(Intent intent) {
+
+    }
 }
