@@ -14,21 +14,21 @@
   ~  See the License for the specific language governing permissions and
   ~  limitations under the License.
   -->
-
-<resources>
-    <item name="recyclerView" type="id"/>
-    <item name="coordinatorLayout" type="id"/>
-    <item name="floatingActionButton" type="id"/>
-    <item name="txtTitle" type="id"/>
-    <item name="txtDescription" type="id"/>
-    <item name="txtEntries" type="id"/>
-    <item name="txtFileSize" type="id"/>
-    <item name="txtErrorMessage" type="id"/>
-    <item name="ivCover" type="id"/>
-    <item name="collapsingToolbar" type="id"/>
-    <item name="btnOk" type="id"/>
-    <item name="btnCancel" type="id"/>
-    <item name="contentLoadingProgressBar" type="id"/>
-    <item name="gridLayout" type="id"/>
-    <item name="ivOscillator" type="id"/>
-</resources>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="64dp"
+        android:height="64dp"
+        android:viewportHeight="26"
+        android:viewportWidth="26">
+    <group
+        android:name="rotationGroup"
+        android:pivotX="13.0"
+        android:pivotY="13.0"
+        android:rotation="0.0">
+        <path
+            android:name="v"
+            android:pathData="m 1,13 c 0,-9 12,-9 12,0 0,9 12,9 12,0"
+            android:strokeColor="#88ffffff"
+            android:strokeLineCap="round"
+            android:strokeWidth="1"/>
+    </group>
+</vector>

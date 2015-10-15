@@ -31,7 +31,7 @@ import java.lang.annotation.RetentionPolicy;
 
 import de.xants.triitus.R;
 import de.xants.triitus.content.NippelLoader;
-import de.xants.triitus.model.Nippel;
+import de.xants.triitus.model.SoundBoard;
 import rx.Subscriber;
 import timber.log.Timber;
 
@@ -43,7 +43,7 @@ public final class ActivityBoardInstall extends BaseActivity implements View.OnC
     private Button mBtnOk, mBtnCancel;
     private TextView mTxtTitle, mTxtDescription, mTxtEntries, mTxtErrorMessage;
     private ContentLoadingProgressBar mLoadingProgressBar;
-    private Nippel mNippel = null;
+    private SoundBoard mSoundBoard = null;
     private int mState = STATE_LOADING;
     private GridLayout mGridLayout;
 
@@ -99,7 +99,7 @@ public final class ActivityBoardInstall extends BaseActivity implements View.OnC
     public void onResume() {
         super.onResume();
         this.setState(STATE_LOADING);
-        NippelLoader.peakBoardInformation(this, this.getIntent()).subscribe(new Subscriber<Nippel>() {
+        NippelLoader.peakBoardInformation(this, this.getIntent()).subscribe(new Subscriber<SoundBoard>() {
 
             @Override
             public void onStart() {
@@ -119,18 +119,18 @@ public final class ActivityBoardInstall extends BaseActivity implements View.OnC
             }
 
             @Override
-            public void onNext(Nippel nippel) {
+            public void onNext(SoundBoard soundBoard) {
                 Timber.d("onNext()");
-                ActivityBoardInstall.this.setNippel(nippel);
+                ActivityBoardInstall.this.setSoundBoard(soundBoard);
             }
         });
     }
 
-    private void setNippel(@NonNull Nippel nippel) {
-        this.mNippel = nippel;
-        this.mTxtTitle.setText(nippel.getTitle());
-        this.mTxtDescription.setText(nippel.getDescription());
-        this.mTxtEntries.setText(nippel.getNippelEntryList().size());
+    private void setSoundBoard(@NonNull SoundBoard soundBoard) {
+        this.mSoundBoard = soundBoard;
+        this.mTxtTitle.setText(soundBoard.getTitle());
+        this.mTxtDescription.setText(soundBoard.getDescription());
+        this.mTxtEntries.setText(soundBoard.getSoundEntryList().size());
     }
 
     @CallSuper

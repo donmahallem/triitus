@@ -15,20 +15,9 @@
   ~  limitations under the License.
   -->
 
-<resources>
-    <item name="recyclerView" type="id"/>
-    <item name="coordinatorLayout" type="id"/>
-    <item name="floatingActionButton" type="id"/>
-    <item name="txtTitle" type="id"/>
-    <item name="txtDescription" type="id"/>
-    <item name="txtEntries" type="id"/>
-    <item name="txtFileSize" type="id"/>
-    <item name="txtErrorMessage" type="id"/>
-    <item name="ivCover" type="id"/>
-    <item name="collapsingToolbar" type="id"/>
-    <item name="btnOk" type="id"/>
-    <item name="btnCancel" type="id"/>
-    <item name="contentLoadingProgressBar" type="id"/>
-    <item name="gridLayout" type="id"/>
-    <item name="ivOscillator" type="id"/>
-</resources>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+                 android:drawable="@drawable/ic_ocillator">
+    <target
+        android:name="v"
+        android:animation="@anim/anim_ocillating"/>
+</animated-vector>

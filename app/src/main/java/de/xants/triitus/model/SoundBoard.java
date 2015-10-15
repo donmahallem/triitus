@@ -18,6 +18,7 @@ package de.xants.triitus.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Since;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,38 +33,44 @@ import de.xants.triitus.content.CM;
 /**
  * Created by Don on 10.10.2015.
  */
-public class Nippel {
+public class SoundBoard {
+    @Since(1.0)
     @Expose
     @SerializedName("id")
     private String mId;
+    @Since(1.0)
     @Expose
     @SerializedName("title")
     private String mTitle;
+    @Since(1.0)
     @Expose
     @SerializedName("description")
     private String mDescription;
+    @Since(1.0)
     @Expose
     @SerializedName("version")
     private int mVersion;
+    @Since(1.0)
     @Expose
     @SerializedName("cover")
     private String mImage;
+    @Since(1.0)
     @Expose
     @SerializedName("entries")
-    private List<NippelEntry> mNippelEntryList;
+    private List<SoundEntry> mSoundEntryList;
 
-    public static Nippel loadFromFile(InputStream inputStream) throws IOException {
+    public static SoundBoard loadFromFile(InputStream inputStream) throws IOException {
         InputStreamReader reader = null;
         try {
             reader = new InputStreamReader(inputStream);
-            return CM.GSON().fromJson(reader, Nippel.class);
+            return CM.GSON().fromJson(reader, SoundBoard.class);
         } finally {
             if (reader != null)
                 reader.close();
         }
     }
 
-    public static Nippel loadFromFile(File file) throws IOException {
+    public static SoundBoard loadFromFile(File file) throws IOException {
         return loadFromFile(new FileInputStream(file));
     }
 
@@ -103,19 +110,19 @@ public class Nippel {
         return mDescription;
     }
 
-    public List<NippelEntry> getNippelEntryList() {
-        return Collections.unmodifiableList(mNippelEntryList);
+    public List<SoundEntry> getSoundEntryList() {
+        return Collections.unmodifiableList(mSoundEntryList);
     }
 
     public void storeToFile(File folder) {
         if (!folder.isDirectory()) {
-            throw new IllegalArgumentException("Error storing Nippel");
+            throw new IllegalArgumentException("Error storing SoundBoard");
         }
     }
 
     @Override
     public String toString() {
-        return "Nippel{" +
+        return "SoundBoard{" +
                 "mId='" + mId + '\'' +
                 ", mTitle='" + mTitle + '\'' +
                 '}';

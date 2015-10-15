@@ -28,7 +28,7 @@ import android.widget.TextView;
 import de.xants.triitus.R;
 import de.xants.triitus.activities.ActivityNippelDetail;
 import de.xants.triitus.content.CM;
-import de.xants.triitus.model.Nippel;
+import de.xants.triitus.model.SoundBoard;
 import de.xants.triitus.otto.ActivityEvent;
 import de.xants.triitus.viewholder.LayoutViewHolder;
 
@@ -37,7 +37,7 @@ import de.xants.triitus.viewholder.LayoutViewHolder;
  */
 final class NippelViewHolder extends LayoutViewHolder implements View.OnClickListener {
 
-    private Nippel mNippel = null;
+    private SoundBoard mSoundBoard = null;
     private TextView mTxtTitle;
     private ImageView mIvCover;
 
@@ -48,11 +48,11 @@ final class NippelViewHolder extends LayoutViewHolder implements View.OnClickLis
         this.itemView.setOnClickListener(this);
     }
 
-    public void setData(@NonNull Nippel nippel) {
-        this.mNippel = nippel;
-        this.mTxtTitle.setText(nippel.getTitle());
+    public void setData(@NonNull SoundBoard soundBoard) {
+        this.mSoundBoard = soundBoard;
+        this.mTxtTitle.setText(soundBoard.getTitle());
         CM.PICASSO().cancelRequest(this.mIvCover);
-        CM.PICASSO().load(nippel.getImage()).fit().into(this.mIvCover);
+        CM.PICASSO().load(soundBoard.getImage()).fit().into(this.mIvCover);
     }
 
     @Override
@@ -60,7 +60,7 @@ final class NippelViewHolder extends LayoutViewHolder implements View.OnClickLis
         if (v == this.itemView) {
             Log.d("test", "test");
             Bundle bundle = new Bundle();
-            bundle.putString("id", this.mNippel.getId());
+            bundle.putString("id", this.mSoundBoard.getId());
             CM.BUS().post(ActivityEvent
                     .create(ActivityNippelDetail.class,
                             bundle,

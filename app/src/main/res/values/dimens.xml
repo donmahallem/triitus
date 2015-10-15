@@ -22,4 +22,7 @@
     <dimen name="cardview_content_horizontal_margin">16dp</dimen>
     <dimen name="cardview_margin">8dp</dimen>
     <dimen name="activity_detail_horizontal_margin">16dp</dimen>
+    <dimen name="listitem_height_avatar">56dp</dimen>
+    <dimen name="listitem_avatar_size">40dp</dimen>
+    <dimen name="listitem_avatar_margin_horizontal">12dp</dimen>
 </resources>

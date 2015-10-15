@@ -18,20 +18,25 @@ package de.xants.triitus.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Since;
 
 /**
  * Created by Don on 10.10.2015.
  */
-public class NippelEntry {
+public class SoundEntry {
+    @Since(1.0)
     @Expose
     @SerializedName("id")
     private int mId;
+    @Since(1.0)
     @Expose
     @SerializedName("title")
     private String mTitle;
+    @Since(1.0)
     @Expose
     @SerializedName("icon")
     private String mIcon;
+    @Since(1.0)
     @Expose
     @SerializedName("sound")
     private String mSound;
@@ -42,6 +47,10 @@ public class NippelEntry {
 
     public String getTitle() {
         return mTitle;
+    }
+
+    public void setTitle(String title) {
+        mTitle = title;
     }
 
     public String getIcon() {

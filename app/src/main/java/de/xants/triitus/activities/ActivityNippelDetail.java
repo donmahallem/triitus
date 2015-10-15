@@ -19,27 +19,108 @@ package de.xants.triitus.activities;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ImageView;
 
+import java.util.Random;
+
 import de.xants.triitus.R;
+import de.xants.triitus.adapter.SoundAdapter;
 import de.xants.triitus.content.CM;
+import de.xants.triitus.model.SoundEntry;
 
 /**
  * Created by Don on 10.10.2015.
  */
 public class ActivityNippelDetail extends BaseActivity {
 
+    private final static String KEY_LAYOUT = "layout";
     private ImageView mIvCover;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
+    private RecyclerView mRecyclerView;
+    private SoundAdapter mSoundAdapter;
+    private Toolbar mToolbar;
 
     @CallSuper
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_nippel_detail);
+        this.mToolbar = (Toolbar) this.findViewById(R.id.toolbar);
         this.mIvCover = (ImageView) this.findViewById(R.id.ivCover);
         this.mCollapsingToolbarLayout = (CollapsingToolbarLayout) this.findViewById(R.id.collapsingToolbar);
         this.mCollapsingToolbarLayout.setTitle("Title");
+        this.setSupportActionBar(this.mToolbar);
+        this.mRecyclerView = (RecyclerView) this.findViewById(R.id.recyclerView);
+        this.mSoundAdapter = new SoundAdapter();
+        if (savedInstanceState != null) {
+            final int value = savedInstanceState.getInt(KEY_LAYOUT);
+            this.mSoundAdapter
+                    .setItemViewType((value == SoundAdapter.TYPE_LIST)
+                            ? SoundAdapter.TYPE_LIST : SoundAdapter.TYPE_CARD);
+        }
+        this.mRecyclerView.setLayoutManager(getLayoutManagerForType(this.mSoundAdapter.getItemViewType()));
+        this.mRecyclerView.setAdapter(this.mSoundAdapter);
+        Random random = new Random();
+        for (int i = 0; i < 20; i++) {
+            SoundEntry soundEntry = new SoundEntry();
+            soundEntry.setTitle("" + random.nextInt(1000));
+            this.mSoundAdapter.addSound(soundEntry);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                switchLayout();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private final RecyclerView.LayoutManager getLayoutManagerForType(@SoundAdapter.ViewType int type) {
+        switch (type) {
+            case SoundAdapter.TYPE_CARD:
+                return new GridLayoutManager(this, 2);
+            case SoundAdapter.TYPE_LIST:
+                return new LinearLayoutManager(this);
+            default:
+                return null;
+        }
+    }
+
+    private void switchLayout() {
+        final int currentLayout = this.mSoundAdapter.getItemViewType();
+        if (currentLayout == SoundAdapter.TYPE_CARD) {
+            this.mSoundAdapter.setItemViewType(SoundAdapter.TYPE_LIST);
+            this.mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        } else {
+            this.mSoundAdapter.setItemViewType(SoundAdapter.TYPE_CARD);
+            this.mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        }
+    }
+
+    @CallSuper
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_LAYOUT, this.mSoundAdapter.getItemViewType());
     }
 
     @CallSuper

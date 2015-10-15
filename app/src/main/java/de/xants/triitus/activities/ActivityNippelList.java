@@ -23,11 +23,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import java.util.Random;
-
 import de.xants.triitus.R;
 import de.xants.triitus.adapter.NippelAdapter;
-import de.xants.triitus.model.Nippel;
+import de.xants.triitus.content.NippelLoader;
+import de.xants.triitus.model.SoundBoard;
+import rx.Observer;
 
 /**
  * Created by Don on 10.10.2015.
@@ -55,27 +55,28 @@ public class ActivityNippelList extends BaseActivity {
                 this.getResources().getInteger(R.integer.card_large_columns)));
         this.mRecyclerView.setAdapter(this.mNippelAdapter);
 
-        Random random = new Random();
-        for (int i = 0; i < 20; i++) {
-            Nippel nippel = new Nippel();
-            nippel.setTitle(new StringBuilder().append(random.nextInt()).toString());
-            nippel.setId("" + random.nextLong());
-            switch (random.nextInt(4)) {
-                case 0:
-                    nippel.setImage("http://i.imgur.com/jNNBvoSm.jpg");
-                    break;
-                case 1:
-                    nippel.setImage("http://i.imgur.com/r7VZAubm.jpg");
-                    break;
-                case 2:
-                    nippel.setImage("http://i.imgur.com/7sgSLZ3m.png");
-                    break;
-                case 3:
-                    nippel.setImage("http://i.imgur.com/aRBNTnYm.jpg");
-                    break;
+    }
+
+    @CallSuper
+    @Override
+    public void onResume() {
+        super.onResume();
+        NippelLoader.getInstalledNippel(this).subscribe(new Observer<SoundBoard>() {
+            @Override
+            public void onCompleted() {
+
             }
-            this.mNippelAdapter.addNippel(nippel);
-        }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onNext(SoundBoard soundBoard) {
+                ActivityNippelList.this.mNippelAdapter.addNippel(soundBoard);
+            }
+        });
     }
 
 

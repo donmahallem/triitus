@@ -27,6 +27,18 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    flavorDimensions "apiLevel"
+    productFlavors {
+        api21 {
+            minSdkVersion 21
+            flavorDimension "apiLevel"
+        }
+        api16 {
+            minSdkVersion 16
+            maxSdkVersion 20
+            flavorDimension "apiLevel"
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false

@@ -18,6 +18,7 @@ package de.xants.triitus.content;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -44,6 +45,7 @@ import okio.Source;
 public class CM {
 
     private final static long CACHE_SIZE = 50 * 1024 * 1024;
+    private final static String BOARDS = "boards";
     private static OkHttpClient OK_CLIENT;
     private static Picasso PICASSO;
     private static Bus BUS = new Bus();
@@ -74,8 +76,15 @@ public class CM {
         return GSON;
     }
 
+    public static File getSoundBoardDirectory(@NonNull final Context context) {
+        final File file = new File(context.getExternalFilesDir(null), BOARDS);
+        if (!file.exists())
+            file.mkdirs();
+        return file;
+    }
+
     public static File getBoardCacheFolder(Context context) {
-        final File file = new File(context.getCacheDir(), "boards");
+        final File file = new File(context.getCacheDir(), BOARDS);
         if (!file.exists())
             file.mkdirs();
         return file;

@@ -20,7 +20,7 @@ import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
-import de.xants.triitus.model.Nippel;
+import de.xants.triitus.model.SoundBoard;
 
 /**
  * Created by Don on 10.10.2015.
@@ -28,9 +28,9 @@ import de.xants.triitus.model.Nippel;
 public final class NippelAdapter extends RecyclerView.Adapter<NippelViewHolder> {
 
     private final static int TYPE_NIPPEL = 0;
-    private SortedList.Callback<Nippel> NippelListCallback = new SortedList.Callback<Nippel>() {
+    private SortedList.Callback<SoundBoard> NippelListCallback = new SortedList.Callback<SoundBoard>() {
         @Override
-        public int compare(Nippel o1, Nippel o2) {
+        public int compare(SoundBoard o1, SoundBoard o2) {
             return o2.getTitle().compareTo(o1.getTitle());
         }
 
@@ -55,16 +55,16 @@ public final class NippelAdapter extends RecyclerView.Adapter<NippelViewHolder> 
         }
 
         @Override
-        public boolean areContentsTheSame(Nippel oldItem, Nippel newItem) {
+        public boolean areContentsTheSame(SoundBoard oldItem, SoundBoard newItem) {
             return false;
         }
 
         @Override
-        public boolean areItemsTheSame(Nippel item1, Nippel item2) {
+        public boolean areItemsTheSame(SoundBoard item1, SoundBoard item2) {
             return item1.getId().equals(item2.getId());
         }
     };
-    private SortedList<Nippel> mNippelSortedList = new SortedList<Nippel>(Nippel.class, NippelListCallback);
+    private SortedList<SoundBoard> mNippelSortedList = new SortedList<SoundBoard>(SoundBoard.class, NippelListCallback);
 
     @Override
     public int getItemViewType(int position) {
@@ -91,7 +91,7 @@ public final class NippelAdapter extends RecyclerView.Adapter<NippelViewHolder> 
         return this.mNippelSortedList.size();
     }
 
-    public void addNippel(Nippel nippel) {
-        this.mNippelSortedList.add(nippel);
+    public void addNippel(SoundBoard soundBoard) {
+        this.mNippelSortedList.add(soundBoard);
     }
 }

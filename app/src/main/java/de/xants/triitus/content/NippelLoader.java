@@ -34,8 +34,9 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import de.xants.triitus.model.Nippel;
+import de.xants.triitus.model.SoundBoard;
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -49,32 +50,27 @@ public final class NippelLoader {
     private final static String BOARDS = "boards";
 
 
-    public static File getSoundBoardDirectory(@NonNull final Context context) {
-        final File file = new File(context.getExternalFilesDir(null), BOARDS);
-        if (!file.exists())
-            file.mkdirs();
-        return file;
+    public static Observable<SoundBoard> getInstalledNippel(@NonNull final Context context) {
+        return getInstalledNippel(CM.getSoundBoardDirectory(context));
     }
 
-    public static Observable<Nippel> getInstalledNippel(@NonNull final Context context) {
-        return getInstalledNippel(getSoundBoardDirectory(context));
-    }
-
-    public static Observable<Nippel> getInstalledNippel(final File installedDir) {
+    public static Observable<SoundBoard> getInstalledNippel(final File installedDir) {
         return Observable.create(
-                new Observable.OnSubscribe<Nippel>() {
+                new Observable.OnSubscribe<SoundBoard>() {
                     @Override
-                    public void call(Subscriber<? super Nippel> sub) {
+                    public void call(Subscriber<? super SoundBoard> sub) {
                         if (sub.isUnsubscribed())
                             return;
                         for (File file : installedDir.listFiles()) {
+                            Timber.d("searching dirs: " + file.getAbsolutePath());
                             if (!file.isDirectory()) {
                                 continue;
                             }
                             final File manifest = new File(file, "manifest.json");
                             if (manifest.exists()) {
+                                Timber.d("Manifest for %s found", file.getAbsolutePath());
                                 try {
-                                    sub.onNext(Nippel.loadFromFile(file));
+                                    sub.onNext(SoundBoard.loadFromFile(manifest));
                                 } catch (Exception exception) {
                                     sub.onError(exception);
                                 }
@@ -86,11 +82,88 @@ public final class NippelLoader {
         );
     }
 
-    public static Observable<Nippel> peakBoardInformation(final Context context, final Intent intent) {
-        return Observable.create(
-                new Observable.OnSubscribe<Nippel>() {
+    public static Observable<SoundBoard> installBoard(final Context context, final File source) {
+        return peakBoardInformation(context, source).doOnEach(new Observer<SoundBoard>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(SoundBoard soundBoard) {
+
+            }
+        });
+            /*
                     @Override
-                    public void call(Subscriber<? super Nippel> sub) {
+                    public void call(Subscriber<? super SoundBoard> sub) {
+                        if (sub.isUnsubscribed())
+                            return;
+                        try {
+                            ZipFile zipFile = new ZipFile(source);
+                            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                            while (entries.hasMoreElements()) {
+                                ZipEntry zipEntry = entries.nextElement();
+                                Timber.d("Zip entry found: " + zipEntry.getName());
+                                if (zipEntry.getName().equals("manifest.json")) {
+                                    Timber.d("manifest found: " + zipEntry.getName());
+                                    sub.onNext(SoundBoard.loadFromFile(zipFile.getInputStream(zipEntry)));
+                                    break;
+                                }
+                            }
+                            zipFile.close();
+                        } catch (Exception exception) {
+                            sub.onError(exception);
+                        } finally {
+                            sub.onCompleted();
+                        }
+                    }
+                }).doOnN;
+    */
+    }
+
+    public static Observable<SoundBoard> peakBoardInformation(final Context context, final File file) {
+        return Observable.create(
+                new Observable.OnSubscribe<SoundBoard>() {
+                    @Override
+                    public void call(Subscriber<? super SoundBoard> sub) {
+                        if (sub.isUnsubscribed())
+                            return;
+                        try {
+                            ZipFile zipFile = new ZipFile(file);
+                            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                            while (entries.hasMoreElements()) {
+                                ZipEntry zipEntry = entries.nextElement();
+                                Timber.d("Zip entry found: " + zipEntry.getName());
+                                if (zipEntry.getName().equals("manifest.json")) {
+                                    Timber.d("manifest found: " + zipEntry.getName());
+                                    sub.onNext(SoundBoard.loadFromFile(zipFile.getInputStream(zipEntry)));
+                                    break;
+                                }
+                            }
+                            zipFile.close();
+                        } catch (Exception exception) {
+                            sub.onError(exception);
+                        } finally {
+                            sub.onCompleted();
+                        }
+                    }
+                }
+        )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static Observable<SoundBoard> peakBoardInformation(final Context context, final Intent intent) {
+        return Observable.create(
+                new Observable.OnSubscribe<SoundBoard>() {
+                    @Override
+                    public void call(Subscriber<? super SoundBoard> sub) {
                         if (sub.isUnsubscribed())
                             return;
                         try {
@@ -101,7 +174,7 @@ public final class NippelLoader {
                                 Timber.d("Zip entry found: " + zipEntry.getName());
                                 if (zipEntry.getName().equals("manifest.json")) {
                                     Timber.d("manifest found: " + zipEntry.getName());
-                                    sub.onNext(Nippel.loadFromFile(zipFile.getInputStream(zipEntry)));
+                                    sub.onNext(SoundBoard.loadFromFile(zipFile.getInputStream(zipEntry)));
                                     break;
                                 }
                             }/*
@@ -110,7 +183,7 @@ public final class NippelLoader {
                                 Timber.d("Zip entry found: "+zipEntry.getName());
                                 if(zipEntry.getName().equals("manifest.json")){
                                     Timber.d("manifest found: "+zipEntry.getName());
-                                    sub.onNext(Nippel.loadFromFile(zipFile.getInputStream(zipEntry)));
+                                    sub.onNext(SoundBoard.loadFromFile(zipFile.getInputStream(zipEntry)));
                                     break;
                                 }
                             }*/
