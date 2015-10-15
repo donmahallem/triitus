@@ -35,11 +35,11 @@ public class SoundEntry {
     @Since(1.0)
     @Expose
     @SerializedName("icon")
-    private String mIcon;
+    private MediaPath mIcon;
     @Since(1.0)
     @Expose
     @SerializedName("sound")
-    private String mSound;
+    private MediaPath mSound;
 
     public int getId() {
         return mId;
@@ -53,11 +53,11 @@ public class SoundEntry {
         mTitle = title;
     }
 
-    public String getIcon() {
+    public MediaPath getIcon() {
         return mIcon;
     }
 
-    public String getSound() {
+    public MediaPath getSound() {
         return mSound;
     }
 }

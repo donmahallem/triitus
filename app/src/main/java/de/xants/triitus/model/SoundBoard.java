@@ -56,7 +56,7 @@ public class SoundBoard {
     private String mImage;
     @Since(1.0)
     @Expose
-    @SerializedName("entries")
+    @SerializedName("sounds")
     private List<SoundEntry> mSoundEntryList;
 
     public static SoundBoard loadFromFile(InputStream inputStream) throws IOException {

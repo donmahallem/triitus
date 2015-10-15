@@ -37,6 +37,6 @@ public final class ListSoundViewHolder extends BaseSoundViewHolder {
     @CallSuper
     public void setSoundEntry(@NonNull SoundEntry soundEntry) {
         super.setSoundEntry(soundEntry);
-        CM.PICASSO().load("http://i.imgur.com/aRBNTnYm.jpg").fit().transform(new CircleTransformation()).into(getIcon());
+        CM.PICASSO().load(soundEntry.getIcon().getUri()).fit().transform(new CircleTransformation()).into(getIcon());
     }
 }

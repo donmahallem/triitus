@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 import de.xants.triitus.model.SoundEntry;
 import de.xants.triitus.viewholder.BaseSoundViewHolder;
@@ -38,7 +39,7 @@ public final class SoundAdapter extends RecyclerView.Adapter<BaseSoundViewHolder
     private SortedList.Callback<SoundEntry> SoundEntryListCallback = new SortedList.Callback<SoundEntry>() {
         @Override
         public int compare(SoundEntry o1, SoundEntry o2) {
-            return o2.getTitle().compareTo(o1.getTitle());
+            return o1.getTitle().compareTo(o2.getTitle());
         }
 
         @Override
@@ -116,6 +117,14 @@ public final class SoundAdapter extends RecyclerView.Adapter<BaseSoundViewHolder
     @Override
     public int getItemCount() {
         return this.mSoundEntryList.size();
+    }
+
+    public final synchronized void addSounds(@NonNull List<SoundEntry> soundEntryList) {
+        if (soundEntryList.size() == 0)
+            return;
+        this.mSoundEntryList.beginBatchedUpdates();
+        this.mSoundEntryList.addAll(soundEntryList);
+        this.mSoundEntryList.endBatchedUpdates();
     }
 
     @IntDef({TYPE_LIST, TYPE_CARD})

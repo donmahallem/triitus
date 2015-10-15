@@ -18,6 +18,7 @@ package de.xants.triitus.activities;
 
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,12 +29,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
-import java.util.Random;
-
 import de.xants.triitus.R;
 import de.xants.triitus.adapter.SoundAdapter;
 import de.xants.triitus.content.CM;
-import de.xants.triitus.model.SoundEntry;
+import de.xants.triitus.content.NippelLoader;
+import de.xants.triitus.model.SoundBoard;
+import rx.Observer;
 
 /**
  * Created by Don on 10.10.2015.
@@ -46,6 +47,7 @@ public class ActivityNippelDetail extends BaseActivity {
     private RecyclerView mRecyclerView;
     private SoundAdapter mSoundAdapter;
     private Toolbar mToolbar;
+    private SoundBoard mSoundBoard = null;
 
     @CallSuper
     @Override
@@ -67,12 +69,6 @@ public class ActivityNippelDetail extends BaseActivity {
         }
         this.mRecyclerView.setLayoutManager(getLayoutManagerForType(this.mSoundAdapter.getItemViewType()));
         this.mRecyclerView.setAdapter(this.mSoundAdapter);
-        Random random = new Random();
-        for (int i = 0; i < 20; i++) {
-            SoundEntry soundEntry = new SoundEntry();
-            soundEntry.setTitle("" + random.nextInt(1000));
-            this.mSoundAdapter.addSound(soundEntry);
-        }
     }
 
     @Override
@@ -127,6 +123,27 @@ public class ActivityNippelDetail extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
+        NippelLoader.getNippel(this, "de.xants.triitus.cena").subscribe(new Observer<SoundBoard>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onNext(SoundBoard soundBoard) {
+                ActivityNippelDetail.this.onSoundBoardLoaded(soundBoard);
+            }
+        });
         CM.PICASSO().load("http://i.imgur.com/aRBNTnYm.jpg").fit().into(this.mIvCover);
+    }
+
+    private void onSoundBoardLoaded(@NonNull SoundBoard soundBoard) {
+        this.mSoundBoard = soundBoard;
+        this.mSoundAdapter.addSounds(soundBoard.getSoundEntryList());
     }
 }

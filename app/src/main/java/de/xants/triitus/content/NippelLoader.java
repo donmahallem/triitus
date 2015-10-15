@@ -20,6 +20,7 @@ package de.xants.triitus.content;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
@@ -62,7 +63,7 @@ public final class NippelLoader {
                         if (sub.isUnsubscribed())
                             return;
                         for (File file : installedDir.listFiles()) {
-                            Timber.d("searching dirs: " + file.getAbsolutePath());
+                            Timber.d("searching dirs: %s", file.getAbsolutePath());
                             if (!file.isDirectory()) {
                                 continue;
                             }
@@ -75,6 +76,62 @@ public final class NippelLoader {
                                     sub.onError(exception);
                                 }
                             }
+                        }
+                        sub.onCompleted();
+                    }
+                }
+        );
+    }
+
+
+    public static Observable<SoundBoard> getNippelC(final Context context) {
+        return Observable.create(
+                new Observable.OnSubscribe<SoundBoard>() {
+                    @Override
+                    public void call(Subscriber<? super SoundBoard> sub) {
+                        if (sub.isUnsubscribed())
+                            return;
+                        Cursor cursor = context.getContentResolver()
+                                .query(Uri.parse("content://de.xants.triitus.provider/boards"),
+                                        null,
+                                        null,
+                                        null,
+                                        null);
+                        if (cursor.getCount() == 0) {
+                            cursor.close();
+                        } else {
+                            cursor.moveToFirst();
+                            final int id = cursor.getColumnIndex(Columns.ID);
+                            final int title = cursor.getColumnIndex(Columns.TITLE);
+                            final int description = cursor.getColumnIndex(Columns.DESCRIPTION);
+                            final int sounds = cursor.getColumnIndex(Columns.SOUNDS);
+                            while (!cursor.isAfterLast()) {
+                                cursor.moveToNext();
+                            }
+                            cursor.close();
+                            sub.onCompleted();
+                        }
+                    }
+                }
+        );
+    }
+
+    public static Observable<SoundBoard> getNippel(final Context context, final String id) {
+        return Observable.create(
+                new Observable.OnSubscribe<SoundBoard>() {
+                    @Override
+                    public void call(Subscriber<? super SoundBoard> sub) {
+                        if (sub.isUnsubscribed())
+                            return;
+                        final File file = new File(CM.getSoundBoardDirectory(context), id + "/manifest.json");
+                        if (file.exists()) {
+                            try {
+                                sub.onNext(SoundBoard.loadFromFile(file));
+                            } catch (IOException e) {
+                                sub.onError(e);
+                            }
+                        } else {
+                            sub.onError(new FileNotFoundException("Couldnt find manifest for " + id));
                         }
                         sub.onCompleted();
                     }

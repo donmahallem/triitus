@@ -36,7 +36,7 @@ public final class CardSoundViewHolder extends BaseSoundViewHolder {
     @CallSuper
     public void setSoundEntry(@NonNull SoundEntry soundEntry) {
         super.setSoundEntry(soundEntry);
-        CM.PICASSO().load("http://i.imgur.com/aRBNTnYm.jpg").fit().into(getIcon());
+        CM.PICASSO().load(soundEntry.getIcon().getUri()).fit().into(getIcon());
     }
 
 }
