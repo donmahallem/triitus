@@ -26,7 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import de.xants.triitus.R;
-import de.xants.triitus.activities.ActivityNippelDetail;
+import de.xants.triitus.activities.ActivityBoardDetail;
 import de.xants.triitus.content.CM;
 import de.xants.triitus.model.SoundBoard;
 import de.xants.triitus.otto.ActivityEvent;
@@ -62,7 +62,7 @@ final class NippelViewHolder extends LayoutViewHolder implements View.OnClickLis
             Bundle bundle = new Bundle();
             bundle.putString("id", this.mSoundBoard.getId());
             CM.BUS().post(ActivityEvent
-                    .create(ActivityNippelDetail.class,
+                    .create(ActivityBoardDetail.class,
                             bundle,
                             Pair.create((View) this.mIvCover, "cover"),
                             Pair.create((View) this.mTxtTitle, "title")));

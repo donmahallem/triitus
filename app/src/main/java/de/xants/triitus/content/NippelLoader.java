@@ -116,7 +116,7 @@ public final class NippelLoader {
         );
     }
 
-    public static Observable<SoundBoard> getNippel(final Context context, final String id) {
+    public static Observable<SoundBoard> getBoard(final Context context, final String id) {
         return Observable.create(
                 new Observable.OnSubscribe<SoundBoard>() {
                     @Override

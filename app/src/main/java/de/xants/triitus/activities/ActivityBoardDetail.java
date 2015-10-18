@@ -39,7 +39,7 @@ import rx.Observer;
 /**
  * Created by Don on 10.10.2015.
  */
-public class ActivityNippelDetail extends BaseActivity {
+public class ActivityBoardDetail extends BaseActivity {
 
     private final static String KEY_LAYOUT = "layout";
     private ImageView mIvCover;
@@ -123,7 +123,7 @@ public class ActivityNippelDetail extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        NippelLoader.getNippel(this, "de.xants.triitus.cena").subscribe(new Observer<SoundBoard>() {
+        NippelLoader.getBoard(this, "de.xants.triitus.cena").subscribe(new Observer<SoundBoard>() {
             @Override
             public void onCompleted() {
 
@@ -136,7 +136,7 @@ public class ActivityNippelDetail extends BaseActivity {
 
             @Override
             public void onNext(SoundBoard soundBoard) {
-                ActivityNippelDetail.this.onSoundBoardLoaded(soundBoard);
+                ActivityBoardDetail.this.onSoundBoardLoaded(soundBoard);
             }
         });
         CM.PICASSO().load("http://i.imgur.com/aRBNTnYm.jpg").fit().into(this.mIvCover);
@@ -146,4 +146,5 @@ public class ActivityNippelDetail extends BaseActivity {
         this.mSoundBoard = soundBoard;
         this.mSoundAdapter.addSounds(soundBoard.getSoundEntryList());
     }
+
 }

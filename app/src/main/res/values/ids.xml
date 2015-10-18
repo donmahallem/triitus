@@ -31,4 +31,6 @@
     <item name="contentLoadingProgressBar" type="id"/>
     <item name="gridLayout" type="id"/>
     <item name="ivOscillator" type="id"/>
+    <item name="editTitle" type="id"/>
+    <item name="editDescription" type="id"/>
 </resources>

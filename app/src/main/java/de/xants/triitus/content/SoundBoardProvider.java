@@ -20,17 +20,14 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.List;
 
-import de.xants.triitus.model.SoundBoard;
 import timber.log.Timber;
 
 /**
@@ -45,20 +42,24 @@ public final class SoundBoardProvider extends ContentProvider {
             Columns.TITLE,
             Columns.SOUND_PATH,
             Columns.IMAGE_PATH};
+    final static String PROVIDER_NAME = "de.xants.triitus.provider";
+    final static String PATH_BOARD = "boards";
+    final static String PATH_BOARD_ID = "boards/#";
+    final static String PATH_SOUND = "sounds";
+    final static String PATH_SOUND_ID = "sounds/#";
+    final static String PATH_BOARD_SOUND = "boards/#/sounds";
+    final static String PATH_BOARD_SOUND_ID = "boards/#/sounds/#";
+    final static String PATH_BOARD_DATA_IMG = "boards/*/data/img/*";
+    final static String PATH_BOARD_DATA_SOUND = "boards/*/data/sound/*";
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-    private final static int TYPE_BOARD_LIST = 1;
-    private final static int TYPE_BOARD = 2;
-    private final static int TYPE_BOARD_SOUND_LIST = 3;
-    private final static int TYPE_BOARD_SOUND = 4;
-    private final static int TYPE_BOARD_DATA_IMAGE = 5;
-    private final static int TYPE_BOARD_DATA_SOUND = 6;
-    private final static String PROVIDER_NAME = "de.xants.triitus.provider";
-    private final static String PATH_BOARD_LIST = "boards";
-    private final static String PATH_BOARD = "boards/*";
-    private final static String PATH_BOARD_SOUND_LIST = "boards/*/sounds";
-    private final static String PATH_BOARD_SOUND = "boards/*/sounds/#";
-    private final static String PATH_BOARD_DATA_IMG = "boards/*/data/img/*";
-    private final static String PATH_BOARD_DATA_SOUND = "boards/*/data/sound/*";
+    private final static int TYPE_BOARD = 1;
+    private final static int TYPE_BOARD_ID = 2;
+    private final static int TYPE_SOUND = 3;
+    private final static int TYPE_SOUND_ID = 4;
+    private final static int TYPE_BOARD_SOUND = 5;
+    private final static int TYPE_BOARD_SOUND_ID = 6;
+    private final static int TYPE_BOARD_DATA_IMAGE = 7;
+    private final static int TYPE_BOARD_DATA_SOUND = 8;
     private final static String MIME_TYPE_JPEG = "image/jpeg";
     private final static String MIME_TYPE_PNG = "image/png";
     private final static String MIME_TYPE_WAV = "audio/wav";
@@ -69,61 +70,40 @@ public final class SoundBoardProvider extends ContentProvider {
     private final static String CURSOR_TYPE_SOUND_DIR = "vnd.android.cursor.dir/sound";
 
     static {
-        sUriMatcher.addURI(PROVIDER_NAME, PATH_BOARD_LIST, TYPE_BOARD_LIST);
         sUriMatcher.addURI(PROVIDER_NAME, PATH_BOARD, TYPE_BOARD);
-        sUriMatcher.addURI(PROVIDER_NAME, PATH_BOARD_SOUND_LIST, TYPE_BOARD_SOUND_LIST);
+        sUriMatcher.addURI(PROVIDER_NAME, PATH_BOARD_ID, TYPE_BOARD_ID);
+        sUriMatcher.addURI(PROVIDER_NAME, PATH_SOUND, TYPE_SOUND);
+        sUriMatcher.addURI(PROVIDER_NAME, PATH_SOUND_ID, TYPE_SOUND_ID);
         sUriMatcher.addURI(PROVIDER_NAME, PATH_BOARD_SOUND, TYPE_BOARD_SOUND);
-        sUriMatcher.addURI(PROVIDER_NAME, PATH_BOARD_DATA_IMG, TYPE_BOARD_DATA_IMAGE);
-        sUriMatcher.addURI(PROVIDER_NAME, PATH_BOARD_DATA_SOUND, TYPE_BOARD_DATA_SOUND);
+        sUriMatcher.addURI(PROVIDER_NAME, PATH_BOARD_SOUND_ID, TYPE_BOARD_SOUND_ID);
     }
+
+    private BoardDatabase mBoardDatabase;
 
     @Override
     public boolean onCreate() {
+        this.mBoardDatabase = new BoardDatabase(this.getContext());
         return false;
     }
 
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        final File boardFolder = CM.getSoundBoardDirectory(this.getContext());
         switch (sUriMatcher.match(uri)) {
-            case TYPE_BOARD_LIST:
-                final MatrixCursor boardListCursor = new MatrixCursor(BOARD_COLUMNS);
-                for (File dir : boardFolder.listFiles()) {
-                    if (dir.isDirectory()) {
-                        final File manifest = new File(dir, "manifest.json");
-                        try {
-                            SoundBoard soundBoard = SoundBoard.loadFromFile(manifest);
-                            if (soundBoard != null) {
-                                boardListCursor.newRow()
-                                        .add(Columns.ID, soundBoard.getId())
-                                        .add(Columns.DESCRIPTION, soundBoard.getDescription())
-                                        .add(Columns.TITLE, soundBoard.getTitle())
-                                        .add(Columns.SOUNDS, soundBoard.getSoundEntryList().size());
-                            }
-                        } catch (IOException e) {
-
-                        }
-                    }
-                }
-                return boardListCursor;
             case TYPE_BOARD:
-                final MatrixCursor cursor = new MatrixCursor(BOARD_COLUMNS);
-                final String id = uri.getPathSegments().get(1);
-                final File manifest = new File(boardFolder, id + "/manifest.json");
-                try {
-                    SoundBoard soundBoard = SoundBoard.loadFromFile(manifest);
-                    if (soundBoard != null) {
-                        cursor.newRow()
-                                .add(Columns.ID, soundBoard.getId())
-                                .add(Columns.DESCRIPTION, soundBoard.getDescription())
-                                .add(Columns.TITLE, soundBoard.getTitle())
-                                .add(Columns.SOUNDS, soundBoard.getSoundEntryList().size());
-                    }
-                } catch (IOException e) {
-
-                }
-                return cursor;
+                return this.mBoardDatabase.queryBoard(selection, selectionArgs, sortOrder);
+            case TYPE_BOARD_ID:
+                final long boardId = Long.parseLong(uri.getLastPathSegment());
+                return this.mBoardDatabase.queryBoard(Columns.ID + "=" + boardId, null, sortOrder);
+            case TYPE_SOUND:
+                return this.mBoardDatabase.querySound(selection, selectionArgs, sortOrder);
+            case TYPE_SOUND_ID:
+                final long soundId = Long.parseLong(uri.getLastPathSegment());
+                return this.mBoardDatabase.querySound(Columns.ID + "=" + soundId, null, sortOrder);
+            case TYPE_BOARD_SOUND:
+                return null;
+            case TYPE_BOARD_SOUND_ID:
+                return null;
             default:
                 return null;
         }
@@ -132,27 +112,52 @@ public final class SoundBoardProvider extends ContentProvider {
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
         Timber.d("openFile( %s , %s )", uri.toString(), mode);
+        if (uri.getPathSegments().size() < 2) {
+            throw new FileNotFoundException("Not found");
+        }
+        final String boardId = uri.getPathSegments().get(1);
         switch (sUriMatcher.match(uri)) {
             case TYPE_BOARD_DATA_IMAGE:
-                final String boardId = uri.getPathSegments().get(1);
                 final String imgId = uri.getPathSegments().get(4);
-                File file = new File(CM.getSoundBoardDirectory(this.getContext()), boardId + "/img/" + imgId);
-                if (file.exists()) {
-                    return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_WRITE);
+                File imgFile = new File(CM.getSoundBoardDirectory(this.getContext()), boardId + "/img/" + imgId);
+                if (imgFile.exists()) {
+                    return ParcelFileDescriptor.open(imgFile, fileModeToParcelMode(mode));
                 }
                 throw new FileNotFoundException(uri.getPath());
             case TYPE_BOARD_DATA_SOUND:
-                throw new FileNotFoundException("Not yet implemented");
+                final String soundId = uri.getPathSegments().get(4);
+                final File soundFile = new File(CM.getSoundBoardDirectory(this.getContext()), boardId + "/sound/" + soundId);
+                if (soundFile.exists()) {
+                    return ParcelFileDescriptor.open(soundFile, fileModeToParcelMode(mode));
+                }
+                throw new FileNotFoundException(uri.getPath());
             default:
                 throw new FileNotFoundException("Unknown path");
         }
     }
 
+    private final int fileModeToParcelMode(@NonNull String mode) {
+        final boolean r = mode.contains("r");
+        final boolean w = mode.contains("w");
+        if (r && w) {
+            return ParcelFileDescriptor.MODE_READ_WRITE;
+        } else if (r) {
+            return ParcelFileDescriptor.MODE_READ_ONLY;
+        } else if (w) {
+            return ParcelFileDescriptor.MODE_WRITE_ONLY;
+        } else {
+            throw new IllegalArgumentException("Unsupported mode");
+        }
+    }
+
     @Override
     public String[] getStreamTypes(Uri uri, String mimeTypeFilter) {
-        if (mimeTypeFilter.startsWith("image") || sUriMatcher.match(uri) == TYPE_BOARD_DATA_IMAGE) {
+        Timber.d("getStreamTypes(%s,%s)", uri.toString(), mimeTypeFilter);
+        if (mimeTypeFilter.startsWith("image")
+                || sUriMatcher.match(uri) == TYPE_BOARD_DATA_IMAGE) {
             return new String[]{MIME_TYPE_JPEG, MIME_TYPE_PNG};
-        } else if (mimeTypeFilter.startsWith("audio") || sUriMatcher.match(uri) == TYPE_BOARD_DATA_SOUND) {
+        } else if (mimeTypeFilter.startsWith("audio")
+                || sUriMatcher.match(uri) == TYPE_BOARD_DATA_SOUND) {
             return new String[]{MIME_TYPE_WAV, MIME_TYPE_MP3};
         } else
             return null;
@@ -161,38 +166,69 @@ public final class SoundBoardProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(Uri uri) {
-        final List pathSegments = uri.getPathSegments();
-        if (pathSegments.size() == 0) {
-            return null;
-        } else if (pathSegments.get(0).equals("boards")) {
-            if (pathSegments.size() == 1) {
+        Timber.d("getType(%s)", uri.toString());
+        switch (sUriMatcher.match(uri)) {
+            case TYPE_BOARD:
                 return CURSOR_TYPE_BOARD_DIR;
-            } else if (pathSegments.size() == 2) {
+            case TYPE_SOUND:
+                return CURSOR_TYPE_SOUND_DIR;
+            case TYPE_SOUND_ID:
+                return CURSOR_TYPE_SOUND_ITEM;
+            case TYPE_BOARD_ID:
                 return CURSOR_TYPE_BOARD_ITEM;
-            } else if (pathSegments.get(2).equals("sounds")) {
-                if (pathSegments.size() == 3) {
-                    return CURSOR_TYPE_SOUND_DIR;
-                } else if (pathSegments.size() == 4) {
-                    return CURSOR_TYPE_SOUND_ITEM;
-                }
-            }
+            case TYPE_BOARD_SOUND:
+                return CURSOR_TYPE_SOUND_DIR;
+            case TYPE_BOARD_SOUND_ID:
+                return CURSOR_TYPE_SOUND_ITEM;
+            default:
+                return null;
         }
-        return null;
     }
 
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        return null;
+        switch (sUriMatcher.match(uri)) {
+            case TYPE_BOARD:
+                final long id = this.mBoardDatabase.insertBoard(values);
+                return Uri.parse("");
+            case TYPE_SOUND:
+                return Uri.parse("");
+            case TYPE_BOARD_SOUND:
+                return this.insert(UriBuilder.getSoundUri(),
+                        values);
+            default:
+                return null;
+        }
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        switch (sUriMatcher.match(uri)) {
+            case TYPE_BOARD:
+                return this.mBoardDatabase.deleteBoard(selection, selectionArgs);
+            case TYPE_BOARD_ID:
+                final long boardId = Long.parseLong(uri.getLastPathSegment());
+                return this.mBoardDatabase.deleteBoard(Columns.ID + "=" + boardId, null);
+            case TYPE_SOUND:
+                return this.mBoardDatabase.deleteBoard(selection, selectionArgs);
+            case TYPE_SOUND_ID:
+                final long soundId = Long.parseLong(uri.getLastPathSegment());
+                return this.mBoardDatabase.deleteBoard(Columns.ID + "=" + soundId, null);
+            default:
+                return 0;
+        }
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        switch (sUriMatcher.match(uri)) {
+            case TYPE_BOARD:
+                return this.mBoardDatabase.updateBoard(values, selection, selectionArgs);
+            case TYPE_BOARD_SOUND:
+                return this.mBoardDatabase.updateSound(values, selection, selectionArgs);
+            default:
+                return -1;
+        }
     }
 }

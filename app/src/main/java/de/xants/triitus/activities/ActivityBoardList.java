@@ -16,23 +16,27 @@
 
 package de.xants.triitus.activities;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import de.xants.triitus.R;
 import de.xants.triitus.adapter.NippelAdapter;
 import de.xants.triitus.content.NippelLoader;
 import de.xants.triitus.model.SoundBoard;
+import de.xants.triitus.services.AudioService;
 import rx.Observer;
 
 /**
  * Created by Don on 10.10.2015.
  */
-public class ActivityNippelList extends BaseActivity {
+public class ActivityBoardList extends BaseActivity implements View.OnClickListener {
 
 
     private RecyclerView mRecyclerView;
@@ -47,6 +51,7 @@ public class ActivityNippelList extends BaseActivity {
         this.setContentView(R.layout.activity_nippel_list);
         this.mRecyclerView = (RecyclerView) this.findViewById(R.id.recyclerView);
         this.mFloatingActionButton = (FloatingActionButton) this.findViewById(R.id.floatingActionButton);
+        this.mFloatingActionButton.setOnClickListener(this);
         this.mCoordinatorLayout = (CoordinatorLayout) this.findViewById(R.id.coordinatorLayout);
 
         //Setup RecyclerView
@@ -74,10 +79,19 @@ public class ActivityNippelList extends BaseActivity {
 
             @Override
             public void onNext(SoundBoard soundBoard) {
-                ActivityNippelList.this.mNippelAdapter.addNippel(soundBoard);
+                ActivityBoardList.this.mNippelAdapter.addNippel(soundBoard);
             }
         });
     }
 
 
+    @Override
+    public void onClick(View v) {
+        if (v == this.mFloatingActionButton) {
+            Intent intent = new Intent(this, AudioService.class);
+            intent.setAction(AudioService.ACTION_PLAY);
+            intent.setData(Uri.parse("content://de.xants.triitus.provider/boards/de.xants.triitus.cena/data/sound/sound.wav"));
+            startService(intent);
+        }
+    }
 }
