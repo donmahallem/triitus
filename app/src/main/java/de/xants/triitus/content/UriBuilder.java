@@ -24,22 +24,22 @@ import android.net.Uri;
 public final class UriBuilder {
 
     public static Uri getBoardUri(long id) {
-        return Uri.parse("content://" + SoundBoardProvider.PROVIDER_NAME +
+        return Uri.parse("content://" + SoundBoardProvider.PROVIDER_NAME + "/" +
                 SoundBoardProvider.PATH_BOARD + "/" + id);
     }
 
     public static Uri getSoundUri(long id) {
-        return Uri.parse("content://" + SoundBoardProvider.PROVIDER_NAME +
+        return Uri.parse("content://" + SoundBoardProvider.PROVIDER_NAME + "/" +
                 SoundBoardProvider.PATH_SOUND + "/" + id);
     }
 
     public static Uri getSoundUri() {
-        return Uri.parse("content://" + SoundBoardProvider.PROVIDER_NAME +
+        return Uri.parse("content://" + SoundBoardProvider.PROVIDER_NAME + "/" +
                 SoundBoardProvider.PATH_SOUND);
     }
 
     public static Uri getBoardUri() {
-        return Uri.parse("content://" + SoundBoardProvider.PROVIDER_NAME +
+        return Uri.parse("content://" + SoundBoardProvider.PROVIDER_NAME + "/" +
                 SoundBoardProvider.PATH_BOARD);
     }
 }

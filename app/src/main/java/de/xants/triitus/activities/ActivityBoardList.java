@@ -16,8 +16,8 @@
 
 package de.xants.triitus.activities;
 
-import android.content.Intent;
-import android.net.Uri;
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.design.widget.CoordinatorLayout;
@@ -26,12 +26,16 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import java.util.Random;
+
 import de.xants.triitus.R;
 import de.xants.triitus.adapter.NippelAdapter;
+import de.xants.triitus.content.Columns;
 import de.xants.triitus.content.NippelLoader;
+import de.xants.triitus.content.UriBuilder;
 import de.xants.triitus.model.SoundBoard;
-import de.xants.triitus.services.AudioService;
 import rx.Observer;
+import timber.log.Timber;
 
 /**
  * Created by Don on 10.10.2015.
@@ -82,16 +86,24 @@ public class ActivityBoardList extends BaseActivity implements View.OnClickListe
                 ActivityBoardList.this.mNippelAdapter.addNippel(soundBoard);
             }
         });
+        Cursor cursor = getContentResolver().query(UriBuilder.getBoardUri(),
+                null, null, null, null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            Timber.d("Row: " + cursor.getString(cursor.getColumnIndex(Columns.TITLE)));
+            cursor.moveToNext();
+        }
+        cursor.close();
     }
 
 
     @Override
     public void onClick(View v) {
         if (v == this.mFloatingActionButton) {
-            Intent intent = new Intent(this, AudioService.class);
-            intent.setAction(AudioService.ACTION_PLAY);
-            intent.setData(Uri.parse("content://de.xants.triitus.provider/boards/de.xants.triitus.cena/data/sound/sound.wav"));
-            startService(intent);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(Columns.TITLE, "Title " + new Random().nextInt(10000));
+            contentValues.put(Columns.DESCRIPTION, "Description " + new Random().nextInt(10000));
+            Timber.d("LOLOL: " + getContentResolver().insert(UriBuilder.getBoardUri(), contentValues).toString());
         }
     }
 }

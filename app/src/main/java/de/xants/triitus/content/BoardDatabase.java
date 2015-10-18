@@ -145,10 +145,22 @@ final class BoardDatabase {
     }
 
     public Cursor querySound(String selection, String[] selectionArgs, String sortOrder) {
-        return null;
+        return this.mDatabaseHelper.getReadableDatabase().query(Table.SOUNDS,
+                null,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder);
     }
 
     public Cursor queryBoard(String selection, String[] selectionArgs, String sortOrder) {
-        return null;
+        return this.mDatabaseHelper.getReadableDatabase().query(Table.BOARDS,
+                null,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder);
     }
 }

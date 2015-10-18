@@ -190,10 +190,11 @@ public final class SoundBoardProvider extends ContentProvider {
     public Uri insert(Uri uri, ContentValues values) {
         switch (sUriMatcher.match(uri)) {
             case TYPE_BOARD:
-                final long id = this.mBoardDatabase.insertBoard(values);
-                return Uri.parse("");
+                final long boardId = this.mBoardDatabase.insertBoard(values);
+                return UriBuilder.getBoardUri(boardId);
             case TYPE_SOUND:
-                return Uri.parse("");
+                final long soundId = this.mBoardDatabase.insertSound(values);
+                return UriBuilder.getSoundUri(soundId);
             case TYPE_BOARD_SOUND:
                 return this.insert(UriBuilder.getSoundUri(),
                         values);
