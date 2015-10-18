@@ -49,8 +49,8 @@ public final class SoundBoardProvider extends ContentProvider {
     final static String PATH_SOUND_ID = "sounds/#";
     final static String PATH_BOARD_SOUND = "boards/#/sounds";
     final static String PATH_BOARD_SOUND_ID = "boards/#/sounds/#";
-    final static String PATH_BOARD_DATA_IMG = "boards/*/data/img/*";
-    final static String PATH_BOARD_DATA_SOUND = "boards/*/data/sound/*";
+    final static String PATH_BOARD_DATA_IMG = "boards/data/img/*";
+    final static String PATH_BOARD_DATA_SOUND = "boards/data/sound/*";
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     private final static int TYPE_BOARD = 1;
     private final static int TYPE_BOARD_ID = 2;
