@@ -38,6 +38,7 @@ class BoardDatabaseHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_TABLE_SOUNDS =
             "CREATE TABLE " + Table.SOUNDS + " (" +
                     Columns.ID + " INTEGER PRIMARY KEY," +
+                    Columns.BOARD_ID + " INTEGER," +
                     Columns.TITLE + " TEXT," +
                     Columns.IMAGE_PATH + " TEXT," +
                     Columns.SOUND_PATH + " TEXT )";

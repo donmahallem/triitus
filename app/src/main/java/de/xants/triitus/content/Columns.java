@@ -21,6 +21,7 @@ package de.xants.triitus.content;
  */
 public final class Columns {
     public final static String ID = "_id";
+    public final static String BOARD_ID = "boardId";
     public final static String TITLE = "title";
     public final static String DESCRIPTION = "description";
     public final static String SOUNDS = "sounds";
