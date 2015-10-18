@@ -231,4 +231,10 @@ public final class SoundBoardProvider extends ContentProvider {
                 return -1;
         }
     }
+
+    @Override
+    public void shutdown() {
+        super.shutdown();
+        this.mBoardDatabase.close();
+    }
 }
